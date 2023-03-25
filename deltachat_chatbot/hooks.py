@@ -8,7 +8,7 @@ from argparse import Namespace
 from typing import List, Tuple
 
 import openai
-import tiktoken
+
 from deltabot_cli import AttrDict, Bot, BotCli, EventType, const, events
 
 from .openai import get_reply, init_openai
@@ -126,15 +126,4 @@ async def _get_messages(msg: AttrDict) -> List[dict]:
     return messages
 
 
-def _apply_limit(messages: List[dict], max_tokens: int) -> Tuple[List[dict], int]:
-    enc = tiktoken.encoding_for_model(cfg["openai"].get("model"))
-    prompt_tokens = 0
-    msgs: List[dict] = []
-    for message in reversed(messages):
-        tokens = len(enc.encode(message["content"]))
-        if prompt_tokens + tokens <= max_tokens // 2:
-            prompt_tokens += tokens
-            msgs.insert(0, message)
-        else:
-            break
-    return msgs, prompt_tokens
+
